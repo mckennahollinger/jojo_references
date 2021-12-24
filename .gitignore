@@ -127,3 +127,12 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# Ignore downloaded HTML files
+Diamond_Is_Unbreakable.html
+JoJolion.html
+Stardust_Crusaders.html
+Steel_Ball_Run.html
+Stone_Ocean.html
+Vento_Auero.html
+
