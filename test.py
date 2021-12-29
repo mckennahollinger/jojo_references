@@ -1,7 +1,7 @@
 import requests
 from bs4 import BeautifulSoup as bs
 
-#Stands first appear in Part 3 of JoJo and have been in the series since
+# Stands first appear in Part 3 of JoJo and have been in the series since
 parts = dict({
 3: 'Stardust_Crusaders', 
 4: 'Diamond_Is_Unbreakable',
@@ -12,21 +12,23 @@ parts = dict({
 link = 'https://jojowiki.com/Template:Part_{}_Stand_Table'
 fileName = '{}.html'
 
-#Initialize arrays to store info like urls for each part being accessed, Stand users and their Stand names
-#TODO: make arrays into a dictionary that holds Stand user, Stand name and what part they're from based on arc being iterated upon
-stands = []
-users = []
+# Initialize arrays to store info like urls for each part being accessed, Stand users and their Stand names
+# TODO: make arrays into a dictionary that holds Stand user, Stand name and what part they're from based on arc being iterated upon
+# stands = []
+# users = []
+
+stand = {'Part': [], 'Name': [], 'User': []}
 
 def getParts(part):
-    #For each part 3-8
+    # For each part 3-8
     for key in part:
-        #Insert the current arc being iterated into str to access table
+        # Insert the current arc being iterated into str to access table
         url = link.format(key)
-        #Append that url to the array storing urls
+        # Append that url to the array storing urls
         # urls.append(link)
-        #Request url for this part
+        # Request url for this part
         r = requests.get(url)
-        #Pass into bs4 to access HTML
+        # Pass into bs4 to access HTML
         soup = bs(r.text, 'html.parser')
         print(soup)
 
@@ -37,92 +39,50 @@ def getParts(part):
         #     file.write(str(soup))
 
 def getStands(part):
-    #For each part 3-8
-    for idx, key in enumerate(part):
-        #Open each part's Stand table from its respective, local html file
-        # 
-        # print(fileName.format(part[key]))
+    # For each part 3-8
+    for num, key in enumerate(part):
+        # Open each part's Stand table from its respective, local html file
         with open(fileName.format(part[key]), encoding='utf-8') as file:
-            # print(file)
+            # Read data from each part's Stand table
             data = file.read()
-            # print(data)
+
+            # Convert raw text data into parsable HTML
             soup = bs(data, 'html.parser')
-            # print(soup)
 
-            #Access each individual Stand's tile within the table
-            char_boxes = soup.find('div', {'class': 'charbox diamond resizeImg'})
-            # tags = soup.find_all('div', {'class': 'diamond charname'})
+            # Access each individual Stand's tile within table
+            # Switch find to find_all when finding all Stands from part
+            stand_tiles = soup.find('div', {'class': 'charbox diamond resizeImg'})
             
-            char_info = char_boxes.find('div', {'class': 'charname'})
+            # Access details about each Stand within each tile
+            stand_info = stand_tiles.find('div', {'class': 'charname'}).find_all('a')
 
-            char_info = char_info.find_all('a')
+            # For each tag providing information about current Stand
+            for idx,tag in enumerate(stand_info):
 
-            # stand_name = char_info.find_all('href')
-
-
-            # print(char_info)
-            #For each individual Stand tile
-            for idx,tag in enumerate(char_info):
-
-                # print(tag)
-
-                tag.find('title')
-
+                #First <a href> title is the Stand i.e title = Star Platinum
                 if(idx == 0):
-                    stands.append(tag['href'])
-                
+                    stand['Part'].append(num+3)
+                    stand_name = tag['href']
+                    stand_name = stand_name.replace('_', ' ')
+                    stand_name = stand_name.replace('/', '')
+
+                    # Multiple Stand names with '&' that appear as ASCII
+                    if '%26' in stand_name:
+                        stand_name = stand_name.replace('%26', '&')
+
+                    stand['Name'].append(stand_name)
+
+                #Second <a href> title is the Stand user i.e title = Jotaro Kujo
                 elif(idx == 1):
-                    users.append(tag['href'])
-            
-    print(stands)
-    print(users)
-                # count = 0
-            #     #Current test case is just getting Jotaro Kujo's info
-            #     if (count < 1):
-            #         for anchor in tag.find_all('a'):
-            #             idx = tag.find_all('a').index(anchor)
-            #         #First <a href> title is the Stand i.e title = Star Platinum
-            #         #S
-            #             if (idx == 0):
-            #                 users.append(anchor['href'])
-            #         #Second <a href> title is the Stand user i.e title = Jotaro Kujo
-            #             if (idx == 1):
-            #                 stands.append(anchor['href'])
-            #             print(anchor)
-            #         count += 1
-            #         print('')
-            #     else:
-            #         break
-            # #Test by printing arrays of Stands and Stand users
-            # print(stands)
-            # print(users)
+                    stand_user = tag['href']
+                    stand_user = stand_user.replace('_', ' ')
+                    stand_user = stand_user.replace('/', '')
+                    stand['User'].append(stand_user)
+    print(stand)
 
 # getParts(parts)
 getStands(parts)
 
-
-
-
-
-#TODO: Use object oriented programming to figure out the rest from here to reduce requests
-
-#     #Accesses specific Stand's css class tile where info is stored
-#     #For some reason this has stopped working
-#     #TODO: fix getting tags
-#     # tags = soup.find_all('div', {'class': 'diamond charname'})
-#     # # For each HTML element
-#     # for tag in tags:
-#     #     for anchor in tag.find_all('a'):
-#     #         idx = tag.find_all('a').index(anchor)
-#     #         #First <a href> title is the Stand i.e title = Star Platinum
-#     #         if (idx == 0):
-#     #                 stands.append(anchor['href'])
-#     #         #Second <a href> title is the Stand user i.e title = Jotaro Kujo
-#     #         if (idx == 1):
-#     #                 users.append(anchor['href'])
-# #Test by printing arrays of Stands and Stand users
-# print(stands)
-# print(users)
 
 #TODO: Do I even need these?
 standsURL = []
