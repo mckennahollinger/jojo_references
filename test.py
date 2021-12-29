@@ -38,42 +38,67 @@ def getParts(part):
 
 def getStands(part):
     #For each part 3-8
-    for key in part:
-
+    for idx, key in enumerate(part):
         #Open each part's Stand table from its respective, local html file
         # 
         # print(fileName.format(part[key]))
         with open(fileName.format(part[key]), encoding='utf-8') as file:
-            print(file)
+            # print(file)
             data = file.read()
-            print(data)
+            # print(data)
             soup = bs(data, 'html.parser')
             # print(soup)
 
             #Access each individual Stand's tile within the table
-            tags = soup.find_all('div', {'class': 'diamond charname'})
-            # print(tags)
+            char_boxes = soup.find('div', {'class': 'charbox diamond resizeImg'})
+            # tags = soup.find_all('div', {'class': 'diamond charname'})
+            
+            char_info = char_boxes.find('div', {'class': 'charname'})
 
+            char_info = char_info.find_all('a')
+
+            # stand_name = char_info.find_all('href')
+
+
+            # print(char_info)
             #For each individual Stand tile
-            for tag in tags:
-                #Current test case is just getting Jotaro Kujo's info
-                if (count < 1):
-                    for anchor in tag.find_all('a'):
-                        idx = tag.find_all('a').index(anchor)
-                    #First <a href> title is the Stand i.e title = Star Platinum
-                        if (idx == 0):
-                            stands.append(anchor['href'])
-                    #Second <a href> title is the Stand user i.e title = Jotaro Kujo
-                        if (idx == 1):
-                            users.append(anchor['href'])
-                    count = count + 1
-                else:
-                    break
-            #Test by printing arrays of Stands and Stand users
+            for idx,tag in enumerate(char_info):
+
+                # print(tag)
+
+                tag.find('title')
+
+                if(idx == 0):
+                    stands.append(tag['href'])
+                
+                elif(idx == 1):
+                    users.append(tag['href'])
+            
+    print(stands)
+    print(users)
+                # count = 0
+            #     #Current test case is just getting Jotaro Kujo's info
+            #     if (count < 1):
+            #         for anchor in tag.find_all('a'):
+            #             idx = tag.find_all('a').index(anchor)
+            #         #First <a href> title is the Stand i.e title = Star Platinum
+            #         #S
+            #             if (idx == 0):
+            #                 users.append(anchor['href'])
+            #         #Second <a href> title is the Stand user i.e title = Jotaro Kujo
+            #             if (idx == 1):
+            #                 stands.append(anchor['href'])
+            #             print(anchor)
+            #         count += 1
+            #         print('')
+            #     else:
+            #         break
+            # #Test by printing arrays of Stands and Stand users
             # print(stands)
             # print(users)
 
-getParts(parts)
+# getParts(parts)
+getStands(parts)
 
 
 
